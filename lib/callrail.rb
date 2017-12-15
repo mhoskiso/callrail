@@ -1,3 +1,4 @@
+require 'bundler/setup'
 require "callrail/version"
 require 'json'
 require 'ostruct'
@@ -5,6 +6,8 @@ require 'rest-client'
 
 module Callrail
   class Api
+
+    MAX_PAGE_SIZE = '250'
 
     def initialize(key)
       @url = 'https://api.callrail.com/v2/a'
@@ -16,9 +19,24 @@ module Callrail
       OpenStruct.new(code: response.code, body: body)
     end
 
-    def get_accounts
+    def get_accounts(opts = {}) 
       path = ".json"
-      results = parse_json(RestClient.get(@url+path, :Authorization => $auth)).body['accounts']
+      results = []
+      params = {}
+      params[:page] = opts[:page] || 1
+      params[:per_page] = opts[:per_page] || MAX_PAGE_SIZE
+      total_records = parse_json(RestClient.get(@url+path, params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth)).body['total_records'] || 1
+      total_pages = parse_json(RestClient.get(@url+path, params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth)).body['total_pages'] || 1
+      response = parse_json(RestClient.get(@url+path, :Authorization => $auth)).body['accounts']
+
+      while total_pages > 0      
+        response = parse_json(RestClient.get(@url+path, :Authorization => $auth)).body['accounts']
+        results.push(response)
+        params[:page] += 1 unless opts[:page]
+        total_pages -= 1
+      end
+
+      return results
     end
 
     def get_companies(opts = {}) 
