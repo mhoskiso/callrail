@@ -19,33 +19,57 @@ module Callrail
       OpenStruct.new(code: response.code, body: body)
     end
 
-    def get_accounts(opts = {}) 
-      path = ".json"
-      results = []
+    def set_params(opts)
       params = {}
       params[:page] = opts[:page] || 1
+      params[:page_request] = true if opts[:page]
       params[:per_page] = opts[:per_page] || MAX_PAGE_SIZE
-      total_records = parse_json(RestClient.get(@url+path, params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth)).body['total_records'] || 1
-      total_pages = parse_json(RestClient.get(@url+path, params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth)).body['total_pages'] || 1
-      response = parse_json(RestClient.get(@url+path, :Authorization => $auth)).body['accounts']
+      params[:path] = opts[:path]
+      params[:total_records] = get_total_records(params)
+      params[:total_pages] = get_total_pages(params)
+      params[:data] = opts[:data] || ""
+      return params
+    end
 
-      while total_pages > 0      
-        response = parse_json(RestClient.get(@url+path, :Authorization => $auth)).body['accounts']
-        results.push(response)
-        params[:page] += 1 unless opts[:page]
-        total_pages -= 1
+    def get_total_records(params)
+      total_records = parse_json(RestClient.get(@url+params[:path], params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth)).body['total_records'] || 1      
+      return total_records
+    end
+
+    def get_total_pages(params)
+      total_pages = parse_json(RestClient.get(@url+params[:path], params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth)).body['total_pages'] || 1      
+      return total_pages
+    end
+
+    def get_responses(params)
+      responses = []
+      while params[:total_pages] > 0      
+        response = parse_json(RestClient.get(@url+params[:path], params: params,:Authorization => $auth)).body
+        responses.push(response)
+        params[:page] += 1 unless params[:page_request]
+        params[:total_pages] -= 1
       end
+      return responses
+    end
+
+    def get_accounts(opts = {})
+      opts[:path] = ".json"
+      opts[:data] = "accounts"
+      params = set_params(opts)   
+      responses = get_responses(params)
 
       return results
     end
 
     def get_companies(opts = {}) 
-      path = (opts['company_id']) ? "/" + opts['account_id'].to_s + "/companies/" + opts['company_id'].to_s + ".json" : "/" + opts['account_id'].to_s + "/companies.json"
+      opts[:path] = (opts['company_id']) ? "/" + opts['account_id'].to_s + "/companies/" + opts['company_id'].to_s + ".json" : "/" + opts['account_id'].to_s + "/companies.json"
+      opts[:data] = (opts['company_id']) ? "" : "companies"
+      params = set_params(opts) 
       results = (opts['company_id']) ? parse_json(RestClient.get(@url+path, :Authorization => $auth)).body : parse_json(RestClient.get(@url+path, :Authorization => $auth)).body['companies']
     end
 
     def create_company(opts = {}) # http://apidocs.callrail.com/#time-zones
-      path = "/" + opts['account_id'].to_s + "/companies.json"
+      opts[:path] = "/" + opts['account_id'].to_s + "/companies.json"
 
     end
 
