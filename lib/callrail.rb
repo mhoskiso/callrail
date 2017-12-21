@@ -26,11 +26,22 @@ module Callrail
 
     def set_params(opts = {})
       params = {}
+      #Pagination params
       params[:page] = opts[:page] || 1
       params[:per_page] = opts[:per_page] || MAX_PAGE_SIZE
-      params[:path] = opts[:path]
-      params[:total_records] = get_total_records(params)
-      params[:total_pages] = get_total_pages(params)
+      params[:path] = opts[:path] if opts[:path]
+      params[:total_records] = get_total_records(params) if opts[:path]
+      params[:total_pages] = get_total_pages(params) if opts[:path]
+      #Company Params
+      params[:name] = opts[:name] if opts[:name]
+      params[:callscore_enabled] = opts[:callscore_enabled] if opts[:callscore_enabled]
+      params[:keyword_spotting_enabled] = opts[:keyword_spotting_enabled] if opts[:keyword_spotting_enabled]
+      params[:callscribe_enabled] = opts[:callscribe_enabled] if opts[:callscribe_enabled]
+      params[:time_zone] = opts[:time_zone] if opts[:time_zone]
+      params[:swap_exclude_jquery] = opts[:swap_exclude_jquery] if opts[:swap_exclude_jquery]
+      params[:swap_ppc_override] = opts[:swap_ppc_override] if opts[:swap_ppc_override]
+      params[:swap_landing_override] = opts[:swap_landing_override] if opts[:swap_landing_override]
+      params[:swap_cookie_duration] = opts[:swap_cookie_duration] if opts[:swap_cookie_duration]
       return params
     end
 
@@ -72,14 +83,21 @@ module Callrail
     end
 
     def create_company(opts = {}) # http://apidocs.callrail.com/#time-zones
+      params = set_params(opts)
+      path = "/" + @account_id + "/companies.json"
+      response = parse_json(RestClient.post(@url+path, params ,:Authorization => @auth))
+      return response.code    
+    end
 
-      params[:path] = "/" + @account_id + "/companies.json"
-      response = parse_json(RestClient.post(@url+params[:path], {:name => opts[:company_name], :time_zone => opts[:time_zone] || nil },:Authorization => @auth))
-      if response.code == 201
-        return "#{opts[:company_name]} successfully created"
-      else
-        return "Failure, response code:#{response.code}"
-      end
+    def update_company(opts = {})
+      params = set_params(opts) 
+      path = "/" + @account_id + "/companies/" + opts[:company_id].to_s
+      response = parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
+    end
+
+    def disable_company( opts = {})
+      path = "/" + @account_id + "/companies/" + opts[:company_id].to_s
+      response = parse_json(RestClient.delete(@url+path, :Authorization => @auth))
     end
 
     def get_users( opts={} )
