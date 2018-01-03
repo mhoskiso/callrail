@@ -156,6 +156,44 @@ tracker_options[:whisper_message] = "This is a test number call"
 testcon.create_tracker(tracker_options)
 ```
 
+###### Getting Integrations for a company
+```
+int_opts = {}
+int_opts[:company_id] = <company_id>
+testcon.get_integrations(int_opts)
+```
+
+###### Getting a specific Integrations
+```
+int_opts = {}
+int_opts[:integration_id] = <integration_id>
+testcon.get_integrations(int_opts)
+```
+###### Creating a Webhook Integration
+```
+int_opts = {}
+int_opts[:company_id] = <company_id>
+int_opts[:type] = "Webhooks"
+int_opts[:config] = {:post_call_webhook => ["https://requestb.in"]}
+testcon.create_integration(int_opts)
+```
+
+###### Updating a Webhook Integration
+```
+int_opts = {}
+int_opts[:integration_id] = <integration_id>
+int_opts[:state] = 'active'
+int_opts[:config] = {:post_call_webhook => ["https://requestb.in?test=12345"]}
+testcon.update_integration(int_opts)
+```
+
+###### Disabling an Integration
+```
+int_opts = {}
+int_opts[:integration_id] = <integration_id>
+testcon.disable_integration(int_opts)
+```
+
 
 ## Development
 
