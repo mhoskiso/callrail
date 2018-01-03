@@ -42,8 +42,6 @@ module Callrail
         params[:page] = opts[:page] || 1
         params[:per_page] = opts[:per_page] || MAX_PAGE_SIZE
         params[:path] = opts[:path] if opts[:path]
-        params[:total_records] = get_total_records(params) if opts[:path]
-        params[:total_pages] = get_total_pages(params) if opts[:path]
       #Filters
         if opts[:filtering]
           opts[:filtering].each do |filter|
@@ -90,6 +88,9 @@ module Callrail
         params[:whisper_message] = opts[:whisper_message] if opts[:whisper_message]
         params[:sms_enabled] = opts[:sms_enabled] if opts[:sms_enabled]
         params[:tracking_number] = opts[:tracking_number] if opts[:tracking_number]
+      #Integration Params
+        params[:config] = opts[:config] if opts[:config] 
+        params[:state] = opts[:state] if opts[:state]
 
       #Call Params
         # Sorting: customer_name, customer_phone_number, duration, start_time, source
@@ -98,6 +99,9 @@ module Callrail
       #Text Message Params
         # Filtering: date_range
         # Searching: customer_phone_number, customer_name
+      #pagination
+       params[:total_records] = get_total_records(params) if opts[:path]
+       params[:total_pages] = get_total_pages(params) if opts[:path]
 
       return params
     end
@@ -149,7 +153,7 @@ module Callrail
 
     def update_company(opts = {})
       params = set_params(opts) 
-      path = "/" + @account_id + "/companies/" + opts[:company_id].to_s
+      path = "/" + @account_id + "/companies/" + opts[:company_id].to_s + ".json"
       response = parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
     end
 
@@ -203,6 +207,32 @@ module Callrail
       path = "/" + @account_id + "/trackers/" + opts[:tracker_id] + ".json"
       response = parse_json(RestClient.delete(@url+path, :Authorization => @auth))
     end
+  
+  # Integrations
+    def get_integrations(opts ={})
+      opts[:path] = (opts[:integration_id]) ? "/" + @account_id + "/integrations/" + opts[:integration_id].to_s + ".json" : "/" + @account_id + "/integrations.json"
+      opts[:data] = "integrations" unless opts[:integration_id]
+      results = get_responses(opts)
+      return results
+    end
+
+    def create_integration(opts ={})
+      opts[:path] = "/" + @account_id + "/integrations.json"
+      params = set_params(opts)
+      response = parse_json(RestClient.post(@url+opts[:path], params ,:Authorization => @auth))
+      return response
+    end
+
+    def update_integration(opts = {})
+      params = set_params(opts) 
+      path = "/" + @account_id + "/integrations/" + opts[:integration_id].to_s + ".json"
+      response = parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
+   end
+
+   def disable_integration(opts={})
+      path = "/" + @account_id + "/integrations/" + opts[:integration_id].to_s + ".json"
+      response = parse_json(RestClient.delete(@url+path, :Authorization => @auth))
+   end
 
   end
 end
