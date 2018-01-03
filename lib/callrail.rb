@@ -20,7 +20,7 @@ module Callrail
     end    
 
     def parse_json(response)
-      body = JSON.parse(response.to_str) if response.code == 200
+      body = JSON.parse(response.to_str) if response.code == 200 || response.code == 201
       OpenStruct.new(code: response.code, body: body)
     end
 
@@ -144,7 +144,7 @@ module Callrail
       params = set_params(opts)
       path = "/" + @account_id + "/companies.json"
       response = parse_json(RestClient.post(@url+path, params ,:Authorization => @auth))
-      return response.code    
+      return response   
     end
 
     def update_company(opts = {})
@@ -170,7 +170,7 @@ module Callrail
       params = set_params(opts)
       path = "/" + @account_id + "/users.json"
       response = parse_json(RestClient.post(@url+path, params ,:Authorization => @auth))
-      return response.code  
+      return response 
     end
 
     def update_user(opts = {})
@@ -190,7 +190,7 @@ module Callrail
       opts[:path] = "/" + @account_id + "/trackers.json"
       params = set_params(opts)
       response = parse_json(RestClient.post(@url+opts[:path], params ,:Authorization => @auth))
-      return response.code  
+      return response 
     end
 
     def update_tracker(opts={})

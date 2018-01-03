@@ -22,7 +22,140 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+* *Examples of what is currently enabled
+
+###### Setting Connection
+```ruby
+opts = {}
+opts[:key] = "<Your Callrail API Key>"
+opts[:account_id] = <your_account_id> 
+```
+* * Account ID is optional for the initial connection. You can set the account id later if you need to retrieve it first.
+
+``` testcon = Callrail::Api.new(:key => opts[:key]) ```
+
+
+
+###### Get Accounts
+``` testcon.get_accounts ```
+
+
+###### Set Specific Account
+
+```
+opts[:account_id] = <your_account_id>
+testcon.set_account_id(:account_id => opts[:account_id])
+```
+** Account ID must be set for everything but Get Accounts
+
+###### Get Companies
+
+```testcon.get_companies() ```
+
+###### Get a specific Company 
+``` opts[:company_id] = <company_id> ```
+``` testcon.get_companies(:company_id => opts[:company_id]) ```
+
+###### Create a Company
+```
+opts = {}
+opts[:name] = "XXX - Test Company 1"
+opts[:time_zone] = "America/Los_Angeles" # 
+testcon.create_company(:name => opts[:name])
+```
+
+
+###### Update a Company
+```
+opts = {}
+opts[:name] = "XXX - Test Company 2"
+opts[:company_id] = <company_id> 
+# opts[:time_zone] = "America/Phoenix"
+# opts[:callscore_enabled] = false
+# opts[:keyword_spotting_enabled] = false
+# opts[:callscribe_enabled] = false
+# opts[:swap_exclude_jquery] = true
+# opts[:swap_ppc_override] = false
+# opts[:swap_landing_override] = nil
+# opts[:swap_cookie_duration] = 90
+testcon.update_company(:company_id => opts[:company_id], :time_zone => opts[:time_zone] )
+```
+
+###### Disable a Company
+```
+opts = {}
+opts[:company_id] = <company_id>
+testcon.disable_company(:company_id => opts[:company_id] = <company_id>)
+```
+###### Get Users
+``` testcon.get_users ```
+
+###### Get Specific User
+```
+opts[:user_id] = <user_id>
+testcon.get_users(:user_id => opts[:user_id] )
+```
+
+###### Create User
+```
+user_opts ={}
+user_opts[:first_name] = "User"
+user_opts[:last_name] = "Test"
+user_opts[:email] = "test@test.com"
+user_opts[:role] = "reporting"      
+user_opts[:password] = '<password>'
+user_opts[:companies] = [<company_id>, <company_id2>, <company_id3>]
+testcon.create_user(user_opts)
+```
+
+###### Update a user
+```
+user_opts[:user_id] = <user_id>
+user_opts[:last_name] = "Test2"
+testcon.update_user(user_opts)
+```
+
+###### Get Trackers
+```
+tracker_options = {}
+testcon.get_trackers(tracker_options)
+```
+
+###### Get Trackers for a Company
+```
+tracker_options[:company_id] = <company_id>
+testcon.get_trackers(tracker_options)
+```
+
+###### Get a specific tracker
+```
+tracker_options = {}
+tracker_options[:tracker_id] = <tracker_id>
+testcon.get_trackers(tracker_options)
+```
+
+###### Tracker Filtering
+```
+tracker_options = {}
+tracker_options[:filtering] = [{:field => "type", :value => "source"},{:field => "status", :value => "active"}]
+puts "Filters: 1. #{tracker_options[:filtering][0][:field]} =  #{tracker_options[:filtering][0][:value]} 2. #{tracker_options[:filtering][1][:field]} =  #{tracker_options[:filtering][1][:value]}  "
+testcon.get_trackers(tracker_options)
+```
+
+###### Create a Source Tracker
+```
+tracker_options = {}
+tracker_options[:name] = "Test Source tracker"
+tracker_options[:type] = "source"
+tracker_options[:company_id] = <company_id>
+tracker_options[:call_flow] = {:type => "basic", :recording_enabled => true, :destination_number => "+15555555555", :greeting_text => nil, :greeting_recording_url => nil}
+tracker_options[:tracking_number] = {:area_code => "555", :local => "+15555555555"}
+tracker_options[:source] = {:type => "all"}
+tracker_options[:sms_enabled] = true
+tracker_options[:whisper_message] = "This is a test number call"
+testcon.create_tracker(tracker_options)
+```
+
 
 ## Development
 
