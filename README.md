@@ -90,6 +90,12 @@ testcon.disable_company(opts)
 ###### Get Users
 ``` testcon.get_users ```
 
+###### Get Users For a specific company
+```
+user_opts = {:company_id => <company_id>}
+puts testcon.get_users(user_opts)
+```
+
 ###### Get Specific User
 ```
 opts[:user_id] = <user_id>

@@ -100,48 +100,39 @@ module Callrail
         # Filtering: date_range
         # Searching: customer_phone_number, customer_name
       #pagination
-       params[:total_records] = get_total_records(params) if opts[:path]
-       params[:total_pages] = get_total_pages(params) if opts[:path]
 
       return params
-    end
-
-    def get_total_records(params)
-      total_records = parse_json(RestClient.get(@url+params[:path], params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth)).body['total_records'] || 1      
-      return total_records
-    end
-
-    def get_total_pages(params)
-      total_pages = parse_json(RestClient.get(@url+params[:path], params: params, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth)).body['total_pages'] || 1      
-      return total_pages
     end
 
     def get_responses(opts = {})
       responses = []
       params = set_params(opts)
-      while params[:total_pages] > 0      
-        response = parse_json(RestClient.get(@url+params[:path], params: params,:Authorization => @auth)).body
-        response = (opts[:data]) ? response[opts[:data]] : response
+      response = parse_json(RestClient.get(@url+params[:path], params: params,:Authorization => @auth)).body
+      total_pages = response["total_pages"] || 1
+      total_records = response["total_records"] || 1              
+
+      while total_pages > 0
+        response = (opts[:data]) ? response[opts[:data]] : response 
         responses.push(response)
         params[:page] += 1 unless opts[:page]
-        params[:total_pages] -= 1
+        total_pages -= 1     
+        response = parse_json(RestClient.get(@url+params[:path], params: params,:Authorization => @auth)).body            
       end
-      return responses
+      return responses.flatten! || responses
     end
+
 # Account Calls
     def get_accounts(opts = {})
       opts[:path] = (opts[:account_id]) ? "/" + opts[:account_id].to_s + ".json" : ".json"
       opts[:data] = "accounts" unless  opts[:account_id]
-      results = get_responses(opts)  
-      return results
+      return get_responses(opts)  
     end
 
 # Company Calls
     def get_companies(opts = {}) 
       opts[:path] = (opts[:company_id]) ? "/" + @account_id + "/companies/" + opts[:company_id].to_s + ".json" : "/" + @account_id + "/companies.json"
       opts[:data] = "companies" unless opts[:company_id]
-      results = get_responses(opts)
-      return results
+      return get_responses(opts)
     end
 
     def create_company(opts = {}) # http://apidocs.callrail.com/#time-zones
@@ -154,84 +145,79 @@ module Callrail
     def update_company(opts = {})
       params = set_params(opts) 
       path = "/" + @account_id + "/companies/" + opts[:company_id].to_s + ".json"
-      response = parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
+      return parse_json(RestClient.put(@url+path, params, :Authorization => @auth)).body      
     end
 
     def disable_company( opts = {})
       path = "/" + @account_id + "/companies/" + opts[:company_id].to_s
-      response = parse_json(RestClient.delete(@url+path, :Authorization => @auth))
+      return parse_json(RestClient.delete(@url+path, :Authorization => @auth))
     end
 
 # User Calls
     def get_users( opts={} )
       opts[:path] = (opts[:user_id]) ? "/" + @account_id + "/users/" + opts[:user_id].to_s + ".json" : "/" + @account_id + "/users.json"
       opts[:data] = "users" unless opts[:user_id]
-      results = get_responses(opts)
-      return results
+      return get_responses(opts)
     end
 
     def create_user( opts = {})
       params = set_params(opts)
       path = "/" + @account_id + "/users.json"
-      response = parse_json(RestClient.post(@url+path, params ,:Authorization => @auth))
-      return response 
+      return parse_json(RestClient.post(@url+path, params ,:Authorization => @auth))
     end
 
     def update_user(opts = {})
       params = set_params(opts) 
       path =  "/" + @account_id + "/users/" + opts[:user_id].to_s + ".json"
-      response = parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
+      return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
     end
 
 # Tracker Calls    
     def get_trackers(opts={})
       opts[:path] = (opts[:tracker_id]) ? "/" + @account_id + "/trackers/" + opts[:tracker_id].to_s + ".json" : "/" + @account_id + "/trackers.json"
       opts[:data] = "trackers" unless opts[:tracker_id]
-      results = get_responses(opts)
+      return get_responses(opts)
     end
 
     def create_tracker(opts={})
       opts[:path] = "/" + @account_id + "/trackers.json"
       params = set_params(opts)
-      response = parse_json(RestClient.post(@url+opts[:path], params ,:Authorization => @auth))
-      return response 
+      return parse_json(RestClient.post(@url+opts[:path], params ,:Authorization => @auth))
     end
 
     def update_tracker(opts={})
       opts[:path] = "/" + @account_id + "/trackers/" + opts[:tracker_id] + ".json"
       params = set_params(opts)
-      response = parse_json(RestClient.put(@url+path, params, :Authorization => @auth))  
+      return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))  
     end
 
     def disable_tracker(opts={})
       path = "/" + @account_id + "/trackers/" + opts[:tracker_id] + ".json"
-      response = parse_json(RestClient.delete(@url+path, :Authorization => @auth))
+      return parse_json(RestClient.delete(@url+path, :Authorization => @auth))
     end
   
   # Integrations
     def get_integrations(opts ={})
       opts[:path] = (opts[:integration_id]) ? "/" + @account_id + "/integrations/" + opts[:integration_id].to_s + ".json" : "/" + @account_id + "/integrations.json"
       opts[:data] = "integrations" unless opts[:integration_id]
-      results = get_responses(opts)
-      return results
+      return get_responses(opts)
     end
 
     def create_integration(opts ={})
       opts[:path] = "/" + @account_id + "/integrations.json"
       params = set_params(opts)
-      response = parse_json(RestClient.post(@url+opts[:path], params ,:Authorization => @auth))
-      return response
+      return parse_json(RestClient.post(@url+opts[:path], params ,:Authorization => @auth))
     end
 
     def update_integration(opts = {})
       params = set_params(opts) 
       path = "/" + @account_id + "/integrations/" + opts[:integration_id].to_s + ".json"
-      response = parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
+      return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
    end
 
    def disable_integration(opts={})
       path = "/" + @account_id + "/integrations/" + opts[:integration_id].to_s + ".json"
-      response = parse_json(RestClient.delete(@url+path, :Authorization => @auth))
+      return parse_json(RestClient.delete(@url+path, :Authorization => @auth))
    end
 
   end
