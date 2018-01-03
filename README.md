@@ -85,7 +85,7 @@ testcon.update_company(:company_id => opts[:company_id], :time_zone => opts[:tim
 ```
 opts = {}
 opts[:company_id] = <company_id>
-testcon.disable_company(:company_id => opts[:company_id] = <company_id>)
+testcon.disable_company(opts)
 ```
 ###### Get Users
 ``` testcon.get_users ```
