@@ -116,7 +116,7 @@ module Callrail
         responses.push(response)
         params[:page] += 1 unless opts[:page]
         total_pages -= 1     
-        response = parse_json(RestClient.get(@url+params[:path], params: params,:Authorization => @auth)).body            
+        response = parse_json(RestClient.get(@url+params[:path], params: params,:Authorization => @auth)).body unless total_pages < 1            
       end
       return responses.flatten! || responses
     end
