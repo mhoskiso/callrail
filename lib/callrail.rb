@@ -76,6 +76,7 @@ module Callrail
         params[:role] = opts[:role] if opts[:role]      
         params[:password] = opts[:password] if opts[:password]
         params[:companies] = opts[:companies] if opts[:companies]
+        params[:company_ids] = opts[:company_ids] if opts[:company_ids]
       #Tracker Params
         # Filtering: type, status
         params[:type] = opts[:type] if opts[:type]
