@@ -76,7 +76,7 @@ module Callrail
         params[:role] = opts[:role] if opts[:role]      
         params[:password] = opts[:password] if opts[:password]
         params[:companies] = opts[:companies] if opts[:companies]
-        params[:company_ids] = opts[:company_ids] if opts[:company_ids]
+        params[:company_ids] = opts[:company_ids] if opts[:company_ids] #Callrail disabled
       #Tracker Params
         # Filtering: type, status
         params[:type] = opts[:type] if opts[:type]
@@ -187,13 +187,13 @@ module Callrail
     end
 
     def update_tracker(opts={})
-      opts[:path] = "/" + @account_id + "/trackers/" + opts[:tracker_id] + ".json"
+      opts[:path] = "/" + @account_id + "/trackers/" + opts[:tracker_id].to_s + ".json"
       params = set_params(opts)
       return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))  
     end
 
     def disable_tracker(opts={})
-      path = "/" + @account_id + "/trackers/" + opts[:tracker_id] + ".json"
+      path = "/" + @account_id + "/trackers/" + opts[:tracker_id].to_s + ".json"
       return parse_json(RestClient.delete(@url+path, :Authorization => @auth))
     end
   
