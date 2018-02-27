@@ -161,6 +161,11 @@ tracker_options[:sms_enabled] = true
 tracker_options[:whisper_message] = "This is a test number call"
 testcon.create_tracker(tracker_options)
 ```
+###### Update a Source Tracker
+tracker_options = {}
+tracker_options[:source] = {:type => "search", :search_engine => "all", :search_type => "paid"}
+tracker_options[:tracker_id] = <tracker_id>
+puts testcon.update_tracker(tracker_options)
 
 ###### Getting Integrations for a company
 ```

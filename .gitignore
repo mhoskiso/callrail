@@ -12,3 +12,5 @@
 
 test.rb
 *.gem
+
+Gemfile.lock

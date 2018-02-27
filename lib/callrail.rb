@@ -187,7 +187,7 @@ module Callrail
     end
 
     def update_tracker(opts={})
-      opts[:path] = "/" + @account_id + "/trackers/" + opts[:tracker_id].to_s + ".json"
+      path = "/" + @account_id + "/trackers/" + opts[:tracker_id].to_s + ".json"
       params = set_params(opts)
       return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))  
     end
