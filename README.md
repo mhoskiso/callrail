@@ -167,6 +167,18 @@ tracker_options[:source] = {:type => "search", :search_engine => "all", :search_
 tracker_options[:tracker_id] = <tracker_id>
 puts testcon.update_tracker(tracker_options)
 
+###### Get Calls
+```
+call_options = {}
+testcon.get_calls(call_options)
+```
+
+###### Get a specific call
+```
+call_options = {call_id: <call_id>}
+testcon.get_calls(call_options)
+```
+
 ###### Getting Integrations for a company
 ```
 int_opts = {}

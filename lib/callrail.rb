@@ -122,14 +122,14 @@ module Callrail
       return responses.flatten! || responses
     end
 
-# Account Calls
+# Account 
     def get_accounts(opts = {})
       opts[:path] = (opts[:account_id]) ? "/" + opts[:account_id].to_s + ".json" : ".json"
       opts[:data] = "accounts" unless  opts[:account_id]
       return get_responses(opts)  
     end
 
-# Company Calls
+# Company 
     def get_companies(opts = {}) 
       opts[:path] = (opts[:company_id]) ? "/" + @account_id + "/companies/" + opts[:company_id].to_s + ".json" : "/" + @account_id + "/companies.json"
       opts[:data] = "companies" unless opts[:company_id]
@@ -154,7 +154,7 @@ module Callrail
       return parse_json(RestClient.delete(@url+path, :Authorization => @auth))
     end
 
-# User Calls
+# User 
     def get_users( opts={} )
       opts[:path] = (opts[:user_id]) ? "/" + @account_id + "/users/" + opts[:user_id].to_s + ".json" : "/" + @account_id + "/users.json"
       opts[:data] = "users" unless opts[:user_id]
@@ -173,7 +173,14 @@ module Callrail
       return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
     end
 
-# Tracker Calls    
+# Calls
+  def get_calls( opts={} )
+    opts[:path] = (opts[:call_id]) ? "/" + @account_id + "/calls/" + opts[:call_id].to_s + ".json" : "/" + @account_id + "/calls.json" 
+    opts[:data] = "calls"  unless opts[:call_id]
+    return get_responses(opts)
+  end
+
+# Tracker     
     def get_trackers(opts={})
       opts[:path] = (opts[:tracker_id]) ? "/" + @account_id + "/trackers/" + opts[:tracker_id].to_s + ".json" : "/" + @account_id + "/trackers.json"
       opts[:data] = "trackers" unless opts[:tracker_id]
