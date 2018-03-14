@@ -21,6 +21,11 @@ Or install it yourself as:
     $ gem install callrail
 
 ## Usage
+###### Time options
+Callrail defaults to last_30_days if a date range isn't specified.
+opts[:date_range] - Values: recent, today, yesterday, last_7_days, last_30_days, this_month, last_month, all_time
+opts[:start_date] - ex: “2015-09-05” for all calls after and including September 9, 2015 - “2015-09-05T10:00” for all calls after 10 AM September 5, 2015
+opts[:end_date] - ex: “2015-10-05” for all calls before and including October 9, 2
 
 * *Examples of what is currently enabled
 
@@ -167,7 +172,10 @@ tracker_options[:source] = {:type => "search", :search_engine => "all", :search_
 tracker_options[:tracker_id] = <tracker_id>
 puts testcon.update_tracker(tracker_options)
 
-###### Get Calls
+###### Get Calls   
+# Sorting: customer_name, customer_phone_number, duration, start_time, source
+# Filtering: date_range, answer_status, device, direction, lead_status
+# Searching: caller_name, note, source, dialed_number, caller_number, outgoing_number
 ```
 call_options = {}
 testcon.get_calls(call_options)
@@ -177,6 +185,11 @@ testcon.get_calls(call_options)
 ```
 call_options = {call_id: <call_id>}
 testcon.get_calls(call_options)
+
+###### Update a specific call
+call_options = {call_id: <call_id>}
+call_options[:note] = "Test"
+testcon.update_call(call_options)
 ```
 
 ###### Getting Integrations for a company

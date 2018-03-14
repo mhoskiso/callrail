@@ -91,12 +91,15 @@ module Callrail
         params[:tracking_number] = opts[:tracking_number] if opts[:tracking_number]
       #Integration Params
         params[:config] = opts[:config] if opts[:config] 
-        params[:state] = opts[:state] if opts[:state]
-
+        params[:state] = opts[:state] if opts[:state] 
       #Call Params
         # Sorting: customer_name, customer_phone_number, duration, start_time, source
         # Filtering: date_range, answer_status, device, direction, lead_status
         # Searching: caller_name, note, source, dialed_number, caller_number, outgoing_number
+        params[:tags] = opts[:tags] if opts[:tags]
+        params[:note] = opts[:note] if opts[:note]
+        params[:value] = opts[:value] if opts[:value]
+        params[:lead_status] = opts[:lead_status] if opts[:lead_status]
       #Text Message Params
         # Filtering: date_range
         # Searching: customer_phone_number, customer_name
@@ -174,11 +177,17 @@ module Callrail
     end
 
 # Calls
-  def get_calls( opts={} )
-    opts[:path] = (opts[:call_id]) ? "/" + @account_id + "/calls/" + opts[:call_id].to_s + ".json" : "/" + @account_id + "/calls.json" 
-    opts[:data] = "calls"  unless opts[:call_id]
-    return get_responses(opts)
-  end
+    def get_calls( opts={} )
+      opts[:path] = (opts[:call_id]) ? "/" + @account_id + "/calls/" + opts[:call_id].to_s + ".json" : "/" + @account_id + "/calls.json" 
+      opts[:data] = "calls"  unless opts[:call_id]
+      return get_responses(opts)
+    end
+
+    def update_call(opts = {})
+      params = set_params(opts) 
+      path =  "/" + @account_id + "/calls/" + opts[:call_id].to_s + ".json"
+      return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
+    end
 
 # Tracker     
     def get_trackers(opts={})
