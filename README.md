@@ -173,9 +173,9 @@ tracker_options[:tracker_id] = <tracker_id>
 puts testcon.update_tracker(tracker_options)
 
 ###### Get Calls   
-# Sorting: customer_name, customer_phone_number, duration, start_time, source
-# Filtering: date_range, answer_status, device, direction, lead_status
-# Searching: caller_name, note, source, dialed_number, caller_number, outgoing_number
+Sorting: customer_name, customer_phone_number, duration, start_time, source
+Filtering: date_range, answer_status, device, direction, lead_status
+Searching: caller_name, note, source, dialed_number, caller_number, outgoing_number
         
 ```
 call_options = {}
@@ -195,8 +195,8 @@ call_options[:note] = "Test"
 testcon.update_call(call_options)
 ```
 ###### Get Calls summary
-# Summary Grouping: source, keywords, campaign, referrer, landing_page, or company
-# Summary Fields: total_calls, missed_calls, answered_calls, first_time_callers, average_duration, formatted_average_duration, leads. Defaults to total_calls
+Summary Grouping: source, keywords, campaign, referrer, landing_page, or company
+Summary Fields: total_calls, missed_calls, answered_calls, first_time_callers, average_duration, formatted_average_duration, leads. Defaults to total_calls
 ```
 summary_options = {group_by: "campaign"}
 testcon.get_calls_summary(summary_options)
