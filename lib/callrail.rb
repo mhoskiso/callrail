@@ -96,10 +96,21 @@ module Callrail
         # Sorting: customer_name, customer_phone_number, duration, start_time, source
         # Filtering: date_range, answer_status, device, direction, lead_status
         # Searching: caller_name, note, source, dialed_number, caller_number, outgoing_number
+        # Summary Grouping: source, keywords, campaign, referrer, landing_page, or company
+        # Summary Fields: total_calls, missed_calls, answered_calls, first_time_callers, average_duration, formatted_average_duration, leads. Defaults to total_calls
         params[:tags] = opts[:tags] if opts[:tags]
         params[:note] = opts[:note] if opts[:note]
         params[:value] = opts[:value] if opts[:value]
         params[:lead_status] = opts[:lead_status] if opts[:lead_status]
+        params[:group_by] = opts[:group_by] if opts[:group_by]
+        params[:device] = opts[:device] if opts[:device]
+        params[:min_duration] = opts[:min_duration] if opts[:min_duration]
+        params[:max_duration] = opts[:max_duration] if opts[:max_duration]
+        params[:tracker_ids] = opts[:tracker_ids] if opts[:tracker_ids]
+        params[:direction] = opts[:direction] if opts[:direction]
+        params[:answer_status] = opts[:answer_status] if opts[:answer_status]
+        params[:first_time_callers] = opts[:first_time_callers] if opts[:first_time_callers]
+        params[:agent] = opts[:agent] if opts[:agent]
       #Text Message Params
         # Filtering: date_range
         # Searching: customer_phone_number, customer_name
@@ -183,11 +194,24 @@ module Callrail
       return get_responses(opts)
     end
 
+    def get_calls_summary( opts={} )
+      opts[:path] =  (opts[:time_series] == true) ? "/" + @account_id + "/calls/timeseries.json" : "/" + @account_id + "/calls/summary.json" 
+      return get_responses(opts)
+    end
+
     def update_call(opts = {})
       params = set_params(opts) 
       path =  "/" + @account_id + "/calls/" + opts[:call_id].to_s + ".json"
       return parse_json(RestClient.put(@url+path, params, :Authorization => @auth))      
     end
+
+    def get_call_recording( opts={} )
+      opts[:path] =  "/" + @account_id + "/calls/" + opts[:call_id].to_s + "/recording.json"
+      opts[:data] = "url"
+      return get_responses(opts).first
+    end
+
+    
 
 # Tracker     
     def get_trackers(opts={})
