@@ -10,7 +10,8 @@ module Callrail
     MAX_PAGE_SIZE = '250'
 
     def initialize(opts = {})
-      @url = 'https://api.callrail.com/v2/a'
+      @api_version = opts[:api_version] || "v2"
+      @url = "https://api.callrail.com/#{@api_version}/a"
       @auth = "Token token=" + opts[:key]
       @account_id = opts[:account_id].to_s if opts[:account_id]  
     end

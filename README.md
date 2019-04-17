@@ -34,8 +34,10 @@ opts[:end_date] - ex: “2015-10-05” for all calls before and including Octobe
 opts = {}
 opts[:key] = "<Your Callrail API Key>"
 opts[:account_id] = <your_account_id> 
+opts[:api_version] = "v2"
 ```
 * * Account ID is optional for the initial connection. You can set the account id later if you need to retrieve it first.
+* * API version is optional. v2 will be used by default. v3 is untested, use at your own risk! Callrail IDs are different in v3, keep in mind if changing versions.
 
 ``` testcon = Callrail::Api.new(:key => opts[:key]) ```
 
